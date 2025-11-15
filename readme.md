@@ -1,0 +1,4 @@
+所有keyword已经存到mongo里了，根据mongo里的线索判断这个字段是否处理完毕
+get_keyword_from_mongo.py是从mongo里拿没做过的keyword
+send_keyword_to_mongo.py是往mongo里存字段
+use.py是启动程序
