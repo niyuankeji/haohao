@@ -251,7 +251,7 @@ async def create_conn_from_ez():
                     if cf_resp_json and cf_resp_json["errorId"] == 0:
                         cookies = session.cookies.get_dict() or {}
                         cookies.update(cf_resp_json["solution"]["cookies"])
-                        user_agent = cf_resp_json["header"]["user-agent"]
+                        user_agent = cf_resp_json["solution"]["header"]["user-agent"]
                         logger.info(
                             f"[conn_id={conn_id} retry_count={retry_count}] pass cloudflare success"
                         )
@@ -272,7 +272,7 @@ async def create_conn_from_ez():
                         f"[conn_id={conn_id} retry_count={retry_count}] 请求出来的结果不是403"
                     )
         except Exception as e:
-            logger.error(f"create_conn error: {e.__class__.__name__}")
+            logger.error(f"create_conn_from_ez error: {e.__class__.__name__}")
         finally:
             retry_count += 1
 
