@@ -378,7 +378,7 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                             }
                         )
                     logger.info(
-                        f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):2.f}"
+                        f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):.2f}"
                     )
                     return mongo_info, info_list
             except Exception as e:
