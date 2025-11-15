@@ -1,5 +1,6 @@
 import asyncio
 import re
+import sys
 import time
 import motor.motor_asyncio
 import socket
@@ -21,7 +22,7 @@ mongo_url: str = "mongodb://developer:QYZ3mxps4POMFb76@mongo-wy-hk.mereith.top:3
 
 mongodb_cli = MongoClient(mongo_url)
 youtube_task_favortrain = mongodb_cli.youtube_task_favortrain
-mongodb_client = youtube_task_favortrain.xhs_run_1114
+mongodb_client = youtube_task_favortrain.xhs_run_1114_haohaotest
 
 filmot_language = {
     "Indonesian": "id",
@@ -233,11 +234,11 @@ class Filmot:
                     trs = e.xpath("//div[contains(@id, 'vcard')]/a[2]/@href")
                     for tr in trs:
                         youtube_key = re.findall("=(.*?)&", "".join(tr))[0]
-                        buffer.append({"_id": youtube_key, "language": self.languages})
+                        buffer.append({"_id": youtube_key, "dest_path": "week1/English/","download_status":4,"upload_status":4})
                         logger.debug(buffer)
                         if len(buffer) >= batch_size:
                             try:
-                                di["coll2"].insert_many(buffer, ordered=False)
+                                mongodb_client.insert_many(buffer, ordered=False)
                                 # todo 插入monogo
                                 print(f"写入 {len(buffer)} 条")
                             except Exception as e:
@@ -245,7 +246,10 @@ class Filmot:
                             buffer.clear()  # 清空继续跑
                 except Exception as e:
                     logger.error(f"失败,原因是{e}")
-        di["coll2"].insert_many(buffer, ordered=False)
+        try:
+            mongodb_client.insert_many(buffer, ordered=False)
+        except Exception as e:
+            logger.error("重复插入")
 
 def thread_work(keyword_list,n):
     logger.debug(f"线程{n}开始运行,长度为{len(keyword_list)}")
@@ -269,9 +273,13 @@ def thread_work(keyword_list,n):
 
 
 def run():
-    di["coll"]=get_keyword_from_mongo.get_aws_mongo_link_sync("haohao_youtube", "id_keyword")
-    di["coll2"]=get_keyword_from_mongo.get_aws_mongo_link_sync("haohao_youtube", "test_rate")
-    keyword_list=get_keyword_from_mongo.get_pending_ids_sync()
+    arguments = sys.argv
+    arguments = arguments[1:][0]
+    logger.debug(arguments)
+    di["coll"]=get_keyword_from_mongo.get_aws_mongo_link_sync("haohao_youtube", "id_keyword_bark")
+    #di["coll2"]=get_keyword_from_mongo.get_aws_mongo_link_sync("haohao_youtube", "test_rate")
+    keyword_list=get_keyword_from_mongo.get_pending_ids_sync(arguments)
+    logger.debug(len(keyword_list))
     chunk_size = (len(keyword_list) + 19) // 20  # 保证分成 20 份
     chunks = [keyword_list[i:i + chunk_size] for i in range(0, len(keyword_list), chunk_size)]
     threads = []
