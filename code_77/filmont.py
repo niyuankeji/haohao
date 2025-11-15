@@ -420,8 +420,8 @@ async def main():
     filmont_url_77_coll = await get_async_ny_mongo_link(
         "youtube_task_favortrain", "filmont_url_77"
     )
-    tmp_xhs_run_1114_coll = await get_async_ny_mongo_link(
-        "youtube_task_favortrain", "tmp_xhs_run_1114"
+    xhs_run_1114_coll = await get_async_ny_mongo_link(
+        "youtube_task_favortrain", "xhs_run_1114"
     )
     redis_client = await get_aio_redis_client()
 
@@ -429,7 +429,7 @@ async def main():
         insert_count = 0
         is_success = False
         try:
-            await tmp_xhs_run_1114_coll.insert_many(youtube_key_list, ordered=False)
+            await xhs_run_1114_coll.insert_many(youtube_key_list, ordered=False)
             insert_count = len(youtube_key_list)
             is_success = True
         except pymongo.errors.BulkWriteError as e:
