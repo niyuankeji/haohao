@@ -297,6 +297,7 @@ sem = asyncio.Semaphore(1)
 
 async def get_hcaptcha_cookie():
     retry_count = 1
+    conn_id = str(uuid.uuid4())[:8]
     while True:
         try:
             user_agent = get_user_agent()
@@ -362,28 +363,24 @@ async def get_hcaptcha_cookie():
                 )
                 if response.status_code != 200:
                     continue
-                return session.cookies.get_dict()
+                return session.cookies.get_dict(), proxy, conn_id, user_agent
         except Exception as e:
-            logger.error(f"get_hcaptcha_cookie error: {e.__class__.__name__}")
+            logger.error(f"[get_hcaptcha_cookie {conn_id}] error: {e.__class__.__name__}")
         finally:
-            logger.info(f"get_hcaptcha_cookie尝试第{retry_count}结束")
+            logger.info(f"[get_hcaptcha_cookie {conn_id}] 尝试第{retry_count}结束")
             retry_count += 1
 
 
 async def create_conn_from_hcaptcha():
-    async with sem:
-        hcaptcha_cookie_coll = await hcaptcha_db.get_db()
-        mongo_info = await hcaptcha_cookie_coll.find_one({"cookie": {"$ne": None}})
-        if not mongo_info:
-            cookie_info = await get_hcaptcha_cookie()
-            await hcaptcha_cookie_coll.insert_one({"cookie": cookie_info})
-        else:
-            cookie_info = mongo_info["cookie"]
-    cookies = cookie_info
-    user_agent = get_user_agent()
-    conn_id = str(uuid.uuid4())[:8]
-    # print(cookies)
-    proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-5:rEpTA530j0i6@43.153.55.54:9999"
+    # async with sem:
+    #     hcaptcha_cookie_coll = await hcaptcha_db.get_db()
+    #     mongo_info = await hcaptcha_cookie_coll.find_one({"cookie": {"$ne": None}})
+    #     if not mongo_info:
+    #         cookie_info = await get_hcaptcha_cookie()
+    #         await hcaptcha_cookie_coll.insert_one({"cookie": cookie_info})
+    #     else:
+    #         cookie_info = mongo_info["cookie"]
+    cookies, proxy, conn_id, user_agent = await get_hcaptcha_cookie()
     return CloudflareConn(
         conn_id=conn_id,
         success_count=0,
