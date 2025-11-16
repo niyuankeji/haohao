@@ -46,7 +46,7 @@ response = curl_requests.get(
 if response.status_code != 200:
     print(f"错误的response.status_code: {response.status_code}")
 else:
-    for i in range(3, 6):
+    for i in range(3, 15):
         url = f"https://filmot.com/search/aaa/1/{i}?gridView=1&lang=en"
         response = curl_requests.get(
             url,
@@ -56,4 +56,4 @@ else:
             proxies=proxies,
             impersonate="chrome",
         )
-        print(f"成功的response.status_code: {response.status_code}")
+        print(f"「{i}」成功的response.status_code: {response.status_code}")
