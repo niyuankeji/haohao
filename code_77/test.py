@@ -119,10 +119,22 @@ response = session.post(
     url,
     headers=headers,
     data=data,
-    proxies={
-        "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-        "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-    },
-    allow_redirects=False
+    proxies=proxies,
+    # allow_redirects=False
 )
-print(response)
+from lxml import etree
+
+e = etree.HTML(response.text)
+trs = e.xpath("//div[contains(@id, 'vcard')]/a[2]/@href")
+info_list = []
+for tr in trs:
+    youtube_key = re.findall("=(.*?)&", "".join(tr))[0]
+    info_list.append(
+        {
+            "_id": youtube_key,
+            "dest_path": "week1/English/",
+            "download_status": 4,
+            "upload_status": 4,
+        }
+    )
+print(info_list)
