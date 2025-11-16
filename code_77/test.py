@@ -115,14 +115,16 @@ data = {
     "g-recaptcha-response": resp_json["data"]["generated_pass_UUID"],
     "h-captcha-response": resp_json["data"]["generated_pass_UUID"],
 }
+
+proxies_xx = {
+    "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+    "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+}
 response = session.post(
     url,
     headers=headers,
     data=data,
-    proxies={
-        "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-        "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-    },
+    proxies=proxies_xx,
     # allow_redirects=False
 )
 
@@ -139,10 +141,7 @@ response = session.get(
     url,
     headers=headers,
     params=params,
-    proxies={
-        "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-        "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-    },
+    proxies=proxies_xx,
 )
 
 from lxml import etree
