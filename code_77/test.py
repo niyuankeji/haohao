@@ -30,7 +30,7 @@ cookies = {
 }
 # url = "https://filmot.com/search/zqq/1/2"
 # params = {"gridView": "1", "lang": "en"}
-url = "https://filmot.com/search/aaa/1/2?lang=en&gridView=1"
+url = "https://filmot.com/search/aaa/1/2?gridView=1&lang=en"
 proxies = {
     "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
     "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
