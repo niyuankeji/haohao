@@ -21,7 +21,7 @@ headers = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
     "accept-language": "zh-CN,zh;q=0.9",
     "referer": "https://filmot.com/search/aaa/1/9?lang=en&gridView=1",
-    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
 }
 cookies = {
     # "XSRF-TOKEN": "eyJpdiI6IlhNNzF6VjBlaWxKdUJRbGd4ZmtwMUE9PSIsInZhbHVlIjoiN2tldzN2S0F0djhaV0ZMWW1vd0xjWGFTRnlic1lCYzY2UitkbUwwek96TFdzd0VZV3ZvbW00aXBiRldCVW5ManlDYTNzQTM3Q1BWRkUrdS95YVk3V3BRMVRQanoyR0l2TEtYaG1rWWY2MjdkUWJxUlpPbW5DNmpUVHRsclZtQ3YiLCJtYWMiOiI0MzdhYjg3NDIyNDEyNmFlMmE3NTQ3MmFkMWY2NzU4MDNjMzY0MzM4YzExMTAxMmI2NGZlZjk0N2M1OTdhNmQ1IiwidGFnIjoiIn0%3D",
