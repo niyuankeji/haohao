@@ -129,7 +129,11 @@ async def get_cloudflare_cookie_from_ezcaptcha(
             "websiteURL": target_url,
             "type": "CloudFlare5STask",
             "proxy": proxy,
-            "rqData": {},
+            "rqData": {
+                "cookie": {
+                    "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D",
+                }
+            },
         },
     }
     async with aiohttp.ClientSession() as session:
@@ -235,10 +239,14 @@ async def create_conn_from_ez():
                 "user-agent": user_agent,
             }
             proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999"
+            cookies = {
+                "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D",
+            }
             async with curl_requests.AsyncSession() as session:
                 response = await session.get(
                     url=url,
                     headers=headers,
+                    cookies=cookies,
                     proxies={"http": proxy, "https": proxy},
                     impersonate="chrome",
                     allow_redirects=False,
@@ -491,4 +499,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.get_event_loop().run_until_complete(create_conn_from_ez())
