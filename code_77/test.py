@@ -1,5 +1,15 @@
+import random
+import string
+import secrets
 import requests
 from curl_cffi import requests as curl_requests
+
+
+def generate_secure_random_string(min_length=12, max_length=16):
+    length = random.randint(min_length, max_length)
+    characters = string.ascii_letters + string.digits
+    return "".join(secrets.choice(characters) for i in range(length))
+
 
 headers = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -16,10 +26,10 @@ cookies = {
     # "ShowFilter": "0",
 }
 url = "https://filmot.com/search/aaa/1/2"
-params = {"gridView": "1", "": ""}
+params = {"gridView": "1", "": "", "lang": "en"}
 proxies = {
-    "http": "http://td-customer-SOluI6kkrdk2:rEpTA530j0i6@43.153.55.54:9999",
-    "https": "http://td-customer-SOluI6kkrdk2:rEpTA530j0i6@43.153.55.54:9999",
+    "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+    "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
 }
 response = curl_requests.get(
     url, headers=headers, cookies=cookies, params=params, proxies=proxies
