@@ -41,8 +41,6 @@ class CloudflareConn:
     is_close: bool = field(default=False)
 
     def close(self, is_print: bool = True, close_reason: str = ""):
-        if is_print:
-            logger.warning(close_reason)
         self.is_close = True
 
 
@@ -514,6 +512,7 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                         )
                         return mongo_info, info_list
                     elif response.status_code == 302:
+                        logger.warning(f"出现了302关闭conn: 【conn_id={conn.conn_id}】")
                         hcaptcha_cookie_coll = await hcaptcha_db.get_db()
                         await hcaptcha_cookie_coll.delete_many(
                             {"cookie": {"$ne": None}}
