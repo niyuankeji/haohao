@@ -281,7 +281,7 @@ async def create_conn_from_hcaptcha():
     cookies = {
         "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D"
     }
-    user_agent = get_user_agent()
+    user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
     conn_id = str(uuid.uuid4())[:8]
     return CloudflareConn(
         conn_id=conn_id,
@@ -379,24 +379,29 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                         proxies={"http": conn.proxy, "https": conn.proxy},
                         allow_redirects=False,
                     )
-                    response.raise_for_status()
-                    e = etree.HTML(response.text)
-                    trs = e.xpath("//div[contains(@id, 'vcard')]/a[2]/@href")
-                    info_list = []
-                    for tr in trs:
-                        youtube_key = re.findall("=(.*?)&", "".join(tr))[0]
-                        info_list.append(
-                            {
-                                "_id": youtube_key,
-                                "dest_path": "week1/English/",
-                                "download_status": 4,
-                                "upload_status": 4,
-                            }
+                    if response.status_code == 200:
+                        e = etree.HTML(response.text)
+                        trs = e.xpath("//div[contains(@id, 'vcard')]/a[2]/@href")
+                        info_list = []
+                        for tr in trs:
+                            youtube_key = re.findall("=(.*?)&", "".join(tr))[0]
+                            info_list.append(
+                                {
+                                    "_id": youtube_key,
+                                    "dest_path": "week1/English/",
+                                    "download_status": 4,
+                                    "upload_status": 4,
+                                }
+                            )
+                        logger.info(
+                            f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):.2f}"
                         )
-                    logger.info(
-                        f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):.2f}"
-                    )
-                    return mongo_info, info_list
+                        return mongo_info, info_list
+                    elif response.status_code == 403:
+                        conn.close()
+                        logger.info(f"出现403关闭当前conn【conn_id={conn.conn_id}】")
+                    else:
+                        response.raise_for_status()
             except Exception as e:
                 logger.error(f"fetch_html出现错误: {e.__class__.__name__} {url}")
                 conn.close()
@@ -473,8 +478,8 @@ async def main():
 
     await (
         stream.iterate(producer(filmont_url_77_coll))
-        | pipe.map(get_youtube_key_list, task_limit=1, ordered=False)
-        | pipe.starmap(deal_get_youtube_key_list_result, task_limit=1, ordered=False)
+        | pipe.map(get_youtube_key_list, task_limit=100, ordered=False)
+        | pipe.starmap(deal_get_youtube_key_list_result, task_limit=100, ordered=False)
     )
 
 
