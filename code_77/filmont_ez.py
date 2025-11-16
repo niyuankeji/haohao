@@ -365,7 +365,9 @@ async def get_hcaptcha_cookie():
                     continue
                 return session.cookies.get_dict(), proxy, conn_id, user_agent
         except Exception as e:
-            logger.error(f"[get_hcaptcha_cookie {conn_id}] error: {e.__class__.__name__}")
+            logger.error(
+                f"[get_hcaptcha_cookie {conn_id}] error: {e.__class__.__name__}"
+            )
         finally:
             logger.info(f"[get_hcaptcha_cookie {conn_id}] 尝试第{retry_count}结束")
             retry_count += 1
@@ -450,9 +452,7 @@ hcaptcha_db = HcaptchaDB()
 
 ###########################################################################################
 
-stub: ConnectionPool = ConnectionPool(
-    strategy=FilmontConnectionStrategy(), max_size=50
-)
+stub: ConnectionPool = ConnectionPool(strategy=FilmontConnectionStrategy(), max_size=50)
 
 
 def convert_number(s):
@@ -505,6 +505,10 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                                     "upload_status": 4,
                                 }
                             )
+                        if len(info_list) == 0:
+                            logger.info("出现info_list的长度为0")
+                            conn.close()
+                            continue
                         logger.info(
                             f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):.2f}"
                         )
