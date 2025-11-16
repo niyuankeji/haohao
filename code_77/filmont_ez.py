@@ -382,7 +382,7 @@ async def create_conn_from_hcaptcha():
     cookies = cookie_info
     user_agent = get_user_agent()
     conn_id = str(uuid.uuid4())[:8]
-    print(cookies)
+    # print(cookies)
     proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-5:rEpTA530j0i6@43.153.55.54:9999"
     return CloudflareConn(
         conn_id=conn_id,
@@ -454,7 +454,7 @@ hcaptcha_db = HcaptchaDB()
 ###########################################################################################
 
 stub: ConnectionPool = ConnectionPool(
-    strategy=FilmontConnectionStrategy(), max_size=200
+    strategy=FilmontConnectionStrategy(), max_size=50
 )
 
 
@@ -492,7 +492,7 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                         impersonate="chrome",
                         timeout=60,
                         proxies={"http": conn.proxy, "https": conn.proxy},
-                        allow_redirects=False,
+                        # allow_redirects=False,
                     )
                     if response.status_code == 200:
                         e = etree.HTML(response.text)
@@ -512,13 +512,13 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                             f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):.2f}"
                         )
                         return mongo_info, info_list
-                    elif response.status_code == 302:
-                        logger.warning(f"出现了302关闭conn: 【conn_id={conn.conn_id}】")
-                        hcaptcha_cookie_coll = await hcaptcha_db.get_db()
-                        await hcaptcha_cookie_coll.delete_many(
-                            {"cookie": {"$ne": None}}
-                        )
-                        conn.close()
+                    # elif response.status_code == 302:
+                    #     logger.warning(f"出现了302关闭conn: 【conn_id={conn.conn_id}】")
+                    #     hcaptcha_cookie_coll = await hcaptcha_db.get_db()
+                    #     await hcaptcha_cookie_coll.delete_many(
+                    #         {"cookie": {"$ne": None}}
+                    #     )
+                    #     conn.close()
                     elif response.status_code == 403:
                         conn.close()
                         logger.info(f"出现403关闭当前conn【conn_id={conn.conn_id}】")
