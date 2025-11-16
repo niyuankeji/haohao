@@ -382,6 +382,7 @@ async def create_conn_from_hcaptcha():
     cookies = cookie_info
     user_agent = get_user_agent()
     conn_id = str(uuid.uuid4())[:8]
+    print(cookies)
     proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-5:rEpTA530j0i6@43.153.55.54:9999"
     return CloudflareConn(
         conn_id=conn_id,
