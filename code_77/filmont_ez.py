@@ -300,7 +300,7 @@ async def create_conn_from_hcaptcha():
     }
     user_agent = get_user_agent()
     conn_id = str(uuid.uuid4())[:8]
-    proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999"
+    proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-5:rEpTA530j0i6@43.153.55.54:9999"
     return CloudflareConn(
         conn_id=conn_id,
         success_count=0,
@@ -357,7 +357,7 @@ async def get_aio_redis_client():
 ###########################################################################################
 
 stub: ConnectionPool = ConnectionPool(
-    strategy=FilmontConnectionStrategy(), max_size=100
+    strategy=FilmontConnectionStrategy(), max_size=200
 )
 
 
@@ -393,7 +393,7 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                         headers=headers,
                         cookies=conn.cookies,
                         impersonate="chrome",
-                        timeout=30,
+                        timeout=60,
                         proxies={"http": conn.proxy, "https": conn.proxy},
                         allow_redirects=False,
                     )
