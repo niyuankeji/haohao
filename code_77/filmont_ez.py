@@ -252,6 +252,7 @@ async def create_conn_from_ez():
                     allow_redirects=False,
                 )
                 if response.status_code == 403:
+                    print(response.text)
                     cf_resp_json = await get_cloudflare_cookie_from_ezcaptcha(
                         target_url=url,
                         proxy=proxy,
