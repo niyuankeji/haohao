@@ -364,7 +364,6 @@ async def get_hcaptcha_cookie():
                 )
                 if response.status_code != 200:
                     continue
-                print(f"cookies => {session.cookies.get_dict()}")
                 return session.cookies.get_dict()
         except Exception as e:
             logger.error(f"get_hcaptcha_cookie error: {e.__class__.__name__}")
@@ -375,17 +374,16 @@ async def get_hcaptcha_cookie():
 
 async def create_conn_from_hcaptcha():
     async with sem:
+        hcaptcha_cookie_coll = await hcaptcha_db.get_db()
         mongo_info = await (await hcaptcha_db.get_db()).find_one(
             {"cookie": {"$ne": None}}
         )
         if not mongo_info:
-            await get_hcaptcha_cookie()
+            cookie_info = await get_hcaptcha_cookie()
+            await hcaptcha_cookie_coll.insert_one({"cookie": cookie_info})
         else:
-            pass
-
-    cookies = {
-        "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D",
-    }
+            cookie_info = mongo_info["cookie"]
+    cookies = cookie_info
     user_agent = get_user_agent()
     conn_id = str(uuid.uuid4())[:8]
     proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-5:rEpTA530j0i6@43.153.55.54:9999"
@@ -609,4 +607,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(get_hcaptcha_cookie())
+    asyncio.get_event_loop().run_until_complete(create_conn_from_hcaptcha())
