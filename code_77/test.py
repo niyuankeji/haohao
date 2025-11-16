@@ -28,8 +28,9 @@ cookies = {
     "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D",
     # "ShowFilter": "0",
 }
-url = "https://filmot.com/search/zqq/1/2"
-params = {"gridView": "1", "lang": "en"}
+# url = "https://filmot.com/search/zqq/1/2"
+# params = {"gridView": "1", "lang": "en"}
+url = "https://filmot.com/search/aaa/1/2?lang=en&gridView=1"
 proxies = {
     "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
     "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
@@ -38,7 +39,7 @@ response = curl_requests.get(
     url,
     headers=headers,
     cookies=cookies,
-    params=params,
+    # params=params,
     proxies=proxies,
     impersonate="chrome"
 )
