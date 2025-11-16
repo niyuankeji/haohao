@@ -35,7 +35,12 @@ proxies = {
     "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
 }
 response = curl_requests.get(
-    url, headers=headers, cookies=cookies, params=params, proxies=proxies
+    url,
+    headers=headers,
+    cookies=cookies,
+    params=params,
+    proxies=proxies,
+    impersonate="chrome"
 )
 
 print(response.text)
