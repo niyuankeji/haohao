@@ -119,7 +119,10 @@ response = session.post(
     url,
     headers=headers,
     data=data,
-    proxies=proxies,
+    proxies={
+        "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+        "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+    },
     # allow_redirects=False
 )
 from lxml import etree
