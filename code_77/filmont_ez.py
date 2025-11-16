@@ -301,7 +301,7 @@ async def get_hcaptcha_cookie():
     while True:
         try:
             user_agent = get_user_agent()
-            proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-5:rEpTA530j0i6@43.153.55.54:9999"
+            proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-10:rEpTA530j0i6@43.153.55.54:9999"
             async with curl_requests.AsyncSession() as session:
                 response = await session.get(
                     url="https://filmot.com/search/aaa/1/2",
@@ -506,7 +506,7 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                                 }
                             )
                         if len(info_list) == 0:
-                            logger.info("出现info_list的长度为0")
+                            logger.debug("出现info_list的长度为0")
                             conn.close()
                             continue
                         logger.info(
