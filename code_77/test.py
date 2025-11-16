@@ -18,8 +18,8 @@ cookies = {
 url = "https://filmot.com/search/aaa/1/2"
 params = {"gridView": "1", "": ""}
 proxies = {
-    "http": "http://ytbpr78721:btVBqzWYsuT8@ytbzero.123proxy.cn:7317",
-    "https": "http://ytbpr78721:btVBqzWYsuT8@ytbzero.123proxy.cn:7317",
+    "http": "http://td-customer-SOluI6kkrdk2:rEpTA530j0i6@43.153.55.54:9999",
+    "https": "http://td-customer-SOluI6kkrdk2:rEpTA530j0i6@43.153.55.54:9999",
 }
 response = curl_requests.get(
     url, headers=headers, cookies=cookies, params=params, proxies=proxies
