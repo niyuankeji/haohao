@@ -375,7 +375,7 @@ async def get_hcaptcha_cookie():
 async def create_conn_from_hcaptcha():
     async with sem:
         hcaptcha_cookie_coll = await hcaptcha_db.get_db()
-        mongo_info = await (await hcaptcha_db.get_db()).find_one(
+        mongo_info = await hcaptcha_cookie_coll.find_one(
             {"cookie": {"$ne": None}}
         )
         if not mongo_info:
@@ -446,7 +446,7 @@ class HcaptchaDB:
         self.db: TypeAioCollection = None
 
     async def get_db(self):
-        if not self.db:
+        if self.db is None:
             self.db = await get_async_ny_mongo_link("google-scholar", self.db_name)
         return self.db
 
