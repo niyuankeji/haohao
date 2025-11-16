@@ -231,7 +231,7 @@ async def create_conn_from_ez():
     retry_count = 0
     while True:
         try:
-            user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+            user_agent = get_user_agent()
             headers = {
                 "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                 "accept-language": "zh-CN,zh;q=0.9",
@@ -252,13 +252,12 @@ async def create_conn_from_ez():
                     allow_redirects=False,
                 )
                 if response.status_code == 403:
-                    print(response.text)
                     cf_resp_json = await get_cloudflare_cookie_from_ezcaptcha(
                         target_url=url,
                         proxy=proxy,
                     )
                     if cf_resp_json and cf_resp_json["errorId"] == 0:
-                        cookies = session.cookies.get_dict() or {}
+                        cookies.update(session.cookies.get_dict() or {})
                         cookies.update(cf_resp_json["solution"]["cookies"])
                         user_agent = cf_resp_json["solution"]["header"]["user-agent"]
                         logger.info(
@@ -276,6 +275,15 @@ async def create_conn_from_ez():
                         logger.warning(
                             f"[conn_id={conn_id} retry_count={retry_count}] 过5s盾失败"
                         )
+                elif response.status_code == 200:
+                    return CloudflareConn(
+                        conn_id=conn_id,
+                        success_count=0,
+                        proxy=proxy,
+                        cookies=cookies,
+                        user_agent=user_agent,
+                        use_datetime=datetime.datetime.now(),
+                    )
                 else:
                     logger.warning(
                         f"[conn_id={conn_id} retry_count={retry_count}] 请求出来的结果不是403"
@@ -500,4 +508,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(create_conn_from_ez())
+    asyncio.get_event_loop().run_until_complete(main())
