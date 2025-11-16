@@ -447,6 +447,11 @@ async def main():
     redis_client = await get_aio_redis_client()
 
     async def deal_get_youtube_key_list_result(mongo_info, youtube_key_list):
+        if youtube_key_list is None:
+            await filmont_url_77_coll.update_one(
+                {"_id": mongo_info["_id"]}, {"$set": {"crawler_status": None}}
+            )
+            return
         insert_count = 0
         is_success = False
         try:
