@@ -277,10 +277,26 @@ async def create_conn_from_ez():
             retry_count += 1
 
 
+async def create_conn_from_hcaptcha():
+    cookies = {
+        "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D"
+    }
+    user_agent = get_user_agent()
+    conn_id = str(uuid.uuid4())[:8]
+    return CloudflareConn(
+        conn_id=conn_id,
+        success_count=0,
+        proxy="http://ytbpr78721:btVBqzWYsuT8@ytbzero.123proxy.cn:7317",
+        cookies=cookies,
+        user_agent=user_agent,
+        use_datetime=datetime.datetime.now(),
+    )
+
+
 class FilmontConnectionStrategy(ConnectionStrategy[CloudflareConn]):
     async def make_connection(self) -> CloudflareConn:
         async with cloudflare_sem:
-            return await create_conn_from_ez()
+            return await create_conn_from_hcaptcha()
 
     def connection_is_closed(self, conn: CloudflareConn) -> bool:
         return conn.is_close
@@ -457,8 +473,8 @@ async def main():
 
     await (
         stream.iterate(producer(filmont_url_77_coll))
-        | pipe.map(get_youtube_key_list, task_limit=100, ordered=False)
-        | pipe.starmap(deal_get_youtube_key_list_result, task_limit=100, ordered=False)
+        | pipe.map(get_youtube_key_list, task_limit=1, ordered=False)
+        | pipe.starmap(deal_get_youtube_key_list_result, task_limit=1, ordered=False)
     )
 
 
