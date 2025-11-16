@@ -375,9 +375,7 @@ async def get_hcaptcha_cookie():
 async def create_conn_from_hcaptcha():
     async with sem:
         hcaptcha_cookie_coll = await hcaptcha_db.get_db()
-        mongo_info = await hcaptcha_cookie_coll.find_one(
-            {"cookie": {"$ne": None}}
-        )
+        mongo_info = await hcaptcha_cookie_coll.find_one({"cookie": {"$ne": None}})
         if not mongo_info:
             cookie_info = await get_hcaptcha_cookie()
             await hcaptcha_cookie_coll.insert_one({"cookie": cookie_info})
@@ -515,6 +513,12 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                             f"[get_youtube_key_list keyword={mongo_info['keyword']} page_index={mongo_info['page_index']}] 成功拿到结果花费时间: {(time.time() - start_time):.2f}"
                         )
                         return mongo_info, info_list
+                    elif response.status_code == 302:
+                        hcaptcha_cookie_coll = await hcaptcha_db.get_db()
+                        await hcaptcha_cookie_coll.delete_many(
+                            {"cookie": {"$ne": None}}
+                        )
+                        conn.close()
                     elif response.status_code == 403:
                         conn.close()
                         logger.info(f"出现403关闭当前conn【conn_id={conn.conn_id}】")
@@ -607,4 +611,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(create_conn_from_hcaptcha())
+    asyncio.get_event_loop().run_until_complete(main())
