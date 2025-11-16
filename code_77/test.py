@@ -115,51 +115,47 @@ data = {
     "g-recaptcha-response": resp_json["data"]["generated_pass_UUID"],
     "h-captcha-response": resp_json["data"]["generated_pass_UUID"],
 }
-
-proxies_xx = {
-    "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-    "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-}
-response = session.post(
-    url,
-    headers=headers,
-    data=data,
-    proxies=proxies_xx,
-    # allow_redirects=False
-)
-proxies_xx = {
-    "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-    "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
-}
-headers = {
-    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-    "accept-language": "zh-CN,zh;q=0.9",
-    "cache-control": "no-cache",
-    "pragma": "no-cache",
-    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
-}
-url = "https://filmot.com/search/aaa/1/20"
-params = {"gridView": "1", "lang": "en"}
-response = session.get(
-    url,
-    headers=headers,
-    params=params,
-    proxies=proxies_xx,
-)
-
-from lxml import etree
-
-e = etree.HTML(response.text)
-trs = e.xpath("//div[contains(@id, 'vcard')]/a[2]/@href")
-info_list = []
-for tr in trs:
-    youtube_key = re.findall("=(.*?)&", "".join(tr))[0]
-    info_list.append(
-        {
-            "_id": youtube_key,
-            "dest_path": "week1/English/",
-            "download_status": 4,
-            "upload_status": 4,
-        }
+for _ in range(2):
+    proxies_xx = {
+        "http": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+        "https": f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999",
+    }
+    response = session.post(
+        url,
+        headers=headers,
+        data=data,
+        proxies=proxies_xx,
+        # allow_redirects=False
     )
-print(info_list)
+    headers = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "zh-CN,zh;q=0.9",
+        "cache-control": "no-cache",
+        "pragma": "no-cache",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    }
+    url = "https://filmot.com/search/aaa/1/20"
+    params = {"gridView": "1", "lang": "en"}
+    response = session.get(
+        url,
+        headers=headers,
+        params=params,
+        proxies=proxies_xx,
+    )
+
+    from lxml import etree
+
+    e = etree.HTML(response.text)
+    trs = e.xpath("//div[contains(@id, 'vcard')]/a[2]/@href")
+    info_list = []
+    for tr in trs:
+        youtube_key = re.findall("=(.*?)&", "".join(tr))[0]
+        info_list.append(
+            {
+                "_id": youtube_key,
+                "dest_path": "week1/English/",
+                "download_status": 4,
+                "upload_status": 4,
+            }
+        )
+    print(info_list)
