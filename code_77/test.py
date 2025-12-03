@@ -3,17 +3,16 @@ import asyncio
 import motor.motor_asyncio
 
 sports_terms = [
-    "Football Boot", "Basketball Shoe", "Running Shoe", "Badminton Racket",
-    "Table Tennis Racket", "Tennis Racket", "Golf Club", "Baseball Bat",
-    "Softball Bat", "Fencing Sword", "Archery Bow", "Arrow", "Shooting Rifle",
-    "Gymnastics Mat", "Weightlifting Barbell", "Dumbbell", "Bicycle", "Rowing Oar",
-    "Canoe Paddle", "Sail", "Ski", "Snowboard", "Ski Pole", "Ice Skate",
-    "Ice Hockey Stick", "Curling Stone", "Volleyball Net", "Basketball Hoop",
-    "Football Goal", "Tennis Net", "Ping Pong Table", "Billards Table",
-    "Bowling Pin", "Boxing Glove", "Wrestling Singlet", "Judo Gi", "Taekwondo Dobok",
-    "Swim Cap", "Swim Goggles", "Swimsuit", "Lifebuoy", "Diving Board", "Water Polo Ball",
-    "Field Hockey Stick", "Handball", "Squash Racket", "Golf Ball", "Baseball",
-    "Softball", "Shuttlecock", "Table Tennis Ball", "Tennis Ball", "Hockey Ball",
+    "Score", "Shoot", "Pass", "Dribble", "Tackle", "Block", "Steal", "Assist",
+    "Rebound", "Slam Dunk", "Layup", "Jump Shot", "Three-Pointer", "Free Throw",
+    "Header", "Volley", "Bicycle Kick", "Scissors Kick", "Tackle", "Clearance",
+    "Cross", "Corner Kick", "Penalty Kick", "Free Kick", "Serve", "Return",
+    "Smash", "Drop Shot", "Forehand", "Backhand", "Volley", "Dive", "Flip",
+    "Spin", "Vault", "Somersault", "Cartwheel", "Punch", "Jab", "Hook", "Uppercut",
+    "Block", "Takedown", "Pin", "Submission", "Lift", "Snatch", "Clean and Jerk",
+    "Row", "Paddle", "Jump", "Throw", "Push", "Pull", "Kick", "Strike", "Defend",
+    "Attack", "Evade", "Parry", "Thrust", "Aim", "Fire", "Cycle", "Sprint",
+    "Jog", "Hurdle", "Vault", "Land", "Dive", "Glide",
 ]
 
 
