@@ -3,63 +3,17 @@ import asyncio
 import motor.motor_asyncio
 
 sports_terms = [
-    "Athletics",
-    "Swimming",
-    "Basketball",
-    "Football",
-    "Volleyball",
-    "Table Tennis",
-    "Badminton",
-    "Tennis",
-    "Baseball",
-    "Rugby",
-    "Golf",
-    "Boxing",
-    "Wrestling",
-    "Judo",
-    "Taekwondo",
-    "Karate",
-    "Fencing",
-    "Archery",
-    "Shooting",
-    "Gymnastics",
-    "Artistic Gymnastics",
-    "Trampoline",
-    "Weightlifting",
-    "Cycling",
-    "Equestrian",
-    "Rowing",
-    "Canoeing",
-    "Kayaking",
-    "Sailing",
-    "Surfing",
-    "Skateboarding",
-    "Skiing",
-    "Snowboarding",
-    "Ice Hockey",
-    "Figure Skating",
-    "Speed Skating",
-    "Curling",
-    "Handball",
-    "Field Hockey",
-    "Water Polo",
-    "3x3 Basketball",
-    "Futsal",
-    "Softball",
-    "Squash",
-    "Racquetball",
-    "BMX",
-    "Triathlon",
-    "Marathon",
-    "Sprint",
-    "Hurdles",
-    "Long Jump",
-    "High Jump",
-    "Pole Vault",
-    "Shot Put",
-    "Discus Throw",
-    "Javelin Throw",
-    "Hammer Throw",
+    "Football Boot", "Basketball Shoe", "Running Shoe", "Badminton Racket",
+    "Table Tennis Racket", "Tennis Racket", "Golf Club", "Baseball Bat",
+    "Softball Bat", "Fencing Sword", "Archery Bow", "Arrow", "Shooting Rifle",
+    "Gymnastics Mat", "Weightlifting Barbell", "Dumbbell", "Bicycle", "Rowing Oar",
+    "Canoe Paddle", "Sail", "Ski", "Snowboard", "Ski Pole", "Ice Skate",
+    "Ice Hockey Stick", "Curling Stone", "Volleyball Net", "Basketball Hoop",
+    "Football Goal", "Tennis Net", "Ping Pong Table", "Billards Table",
+    "Bowling Pin", "Boxing Glove", "Wrestling Singlet", "Judo Gi", "Taekwondo Dobok",
+    "Swim Cap", "Swim Goggles", "Swimsuit", "Lifebuoy", "Diving Board", "Water Polo Ball",
+    "Field Hockey Stick", "Handball", "Squash Racket", "Golf Ball", "Baseball",
+    "Softball", "Shuttlecock", "Table Tennis Ball", "Tennis Ball", "Hockey Ball",
 ]
 
 
@@ -80,6 +34,7 @@ async def main():
     keyword_with_page_total_77_coll = await get_async_ny_mongo_link(
         "youtube_task_favortrain", "keyword_with_page_total_77"
     )
+    keyword_with_page_total_77_coll.create_index("keyword", unique=True)
     for batched_tuple in itertools.batched(sports_terms, 10000):
         keyword_with_page_total_77_coll.insert_many(
             [{"keyword": keyword} for keyword in batched_tuple]
@@ -109,4 +64,4 @@ async def main2():
 
 
 if __name__ == "__main__":
-    asyncio.run(main2())
+    asyncio.run(main())
