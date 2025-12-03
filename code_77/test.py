@@ -103,7 +103,7 @@ async def main2():
                     "crawler_status": None,
                 }
             )
-    for batched_tuple in itertools.batched(sports_terms, 10000):
+    for batched_tuple in itertools.batched(task_list, 10000):
         await filmont_url_77_coll.insert_many(list(batched_tuple), ordered=False)
         print("完成一批")
 
