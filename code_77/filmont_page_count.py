@@ -246,7 +246,7 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                     "cache-control": "no-cache",
                     "pragma": "no-cache",
                     "priority": "u=0, i",
-                    "user-agent": conn.user_agent
+                    "user-agent": conn.user_agent,
                 }
                 async with curl_requests.AsyncSession() as session:
                     response = await session.get(
@@ -282,13 +282,19 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                             )
                         return mongo_info, page_num
                     except Exception as e:
-                        logger.error(f"失败,原因是{e} {params}")
-                        import traceback
+                        logger.error(f"失败,原因是{e} {url}")
+                        import traceback, uuid
+
                         traceback.print_exc()
+                        with open(
+                            f"{uuid.uuid4()}.html", mode="w", encoding="utf-8"
+                        ) as f:
+                            f.write(response.text)
                         return mongo_info, 0
             except Exception as e:
                 logger.error(f"fetch_html出现错误: {e.__class__.__name__} {e}")
                 import traceback
+
                 traceback.print_exc()
                 conn.close()
             finally:
