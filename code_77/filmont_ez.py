@@ -279,7 +279,7 @@ async def get_async_ny_mongo_link(db_name: str, coll_name: str):
 
 ###########################################################################################
 
-stub: ConnectionPool = ConnectionPool(strategy=FilmontConnectionStrategy(), max_size=20)
+stub: ConnectionPool = ConnectionPool(strategy=FilmontConnectionStrategy(), max_size=60)
 
 
 def convert_number(s):
