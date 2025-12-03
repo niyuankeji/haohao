@@ -172,9 +172,10 @@ async def create_conn_from_hcaptcha():
                     user_agent = cloudflare_cookie_info["solution"]["header"][
                         "user-agent"
                     ]
+                    headers["user-agent"] = user_agent
                     response = await session.get(
                         url=url,
-                        headers=headers,
+                        headers=cloudflare_cookie_info["solution"]["header"],
                         cookies=cookies,
                         proxies={"http": proxy, "https": proxy},
                         impersonate="chrome",
