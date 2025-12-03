@@ -79,7 +79,8 @@ async def main():
     for batched_tuple in itertools.batched(sports_terms, 10000):
         try:
             await keyword_with_page_total_77_coll.insert_many(
-                [{"keyword": keyword} for keyword in batched_tuple]
+                [{"keyword": keyword} for keyword in batched_tuple],
+                ordered=False
             )
         except Exception as e:
             print(e.__class__.__name__)
