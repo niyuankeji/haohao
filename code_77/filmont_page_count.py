@@ -7,6 +7,7 @@ import asyncio
 import string
 import secrets
 import json
+import re
 import urllib.parse
 from dataclasses import dataclass, field
 import aiohttp
@@ -171,6 +172,63 @@ async def create_conn_from_hcaptcha():
                     user_agent = cloudflare_cookie_info["solution"]["header"][
                         "user-agent"
                     ]
+                    response = await session.get(
+                        url=url,
+                        headers=headers,
+                        proxies={"http": proxy, "https": proxy},
+                        impersonate="chrome",
+                    )
+                    _token = re.findall(
+                        r'<input type="hidden" name="_token" value="(.*?)">',
+                        response.text,
+                    )[0]
+                    data = {
+                        "sitekey": "58b0f6cd-815d-4d93-aad6-d80c7d56a8aa",
+                        "referer": "https://filmot.com/captcha-verify",
+                        "rqdata": "",
+                        "user_agent": user_agent,
+                    }
+                    data = json.dumps(data, separators=(",", ":"))
+                    response = await session.post(
+                        url="http://api.nocaptcha.io/api/wanda/hcaptcha/universal",
+                        data=data,
+                        headers={
+                            "Accept": "*/*",
+                            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                            "Content-Type": "application/json",
+                            "User-Agent": user_agent,
+                            "User-Token": "f77c1828-d256-49f8-adfd-e634c82a71c8",
+                        },
+                    )
+                    resp_json = json.loads(response.text)
+                    if resp_json["msg"] != "验证成功":
+                        logger.error(f"验证失败 {resp_json}")
+                        continue
+                    headers = {
+                        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                        "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+                        "cache-control": "no-cache",
+                        "content-type": "application/x-www-form-urlencoded",
+                        "origin": "https://filmot.com",
+                        "referer": "https://filmot.com/captcha-verify",
+                        "user-agent": user_agent,
+                    }
+                    response = await session.post(
+                        url="https://filmot.com/captcha-validate",
+                        data={
+                            "_token": _token,
+                            "g-recaptcha-response": resp_json["data"][
+                                "generated_pass_UUID"
+                            ],
+                            "h-captcha-response": resp_json["data"]["generated_pass_UUID"],
+                        },
+                        headers=headers,
+                        proxies={"http": proxy, "https": proxy},
+                    )
+                    if response.status_code != 200:
+                        logger.error("response.status_code != 200")
+                        continue
+                    cookies.update(session.cookies.get_dict())
                     return CloudflareConn(
                         conn_id=conn_id,
                         success_count=0,
