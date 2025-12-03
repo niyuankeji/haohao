@@ -3,6 +3,30 @@ import asyncio
 import motor.motor_asyncio
 
 sports_terms = [
+    # 一、核心运动项目（竞技类）
+    "Athletics", "Swimming", "Basketball", "Football", "Volleyball", "Table Tennis",
+    "Badminton", "Tennis", "Baseball", "Rugby", "Golf", "Boxing", "Wrestling",
+    "Judo", "Taekwondo", "Karate", "Fencing", "Archery", "Shooting", "Gymnastics",
+    "Artistic Gymnastics", "Trampoline", "Weightlifting", "Cycling", "Equestrian",
+    "Rowing", "Canoeing", "Kayaking", "Sailing", "Surfing", "Skateboarding",
+    "Skiing", "Snowboarding", "Ice Hockey", "Figure Skating", "Speed Skating",
+    "Curling", "Handball", "Field Hockey", "Water Polo", "3x3 Basketball",
+    "Futsal", "Softball", "Squash", "Racquetball", "BMX", "Triathlon", "Marathon",
+    "Sprint", "Hurdles", "Long Jump", "High Jump", "Pole Vault", "Shot Put",
+    "Discus Throw", "Javelin Throw", "Hammer Throw",
+    
+    # 二、核心竞技动作
+    "Score", "Shoot", "Pass", "Dribble", "Tackle", "Block", "Steal", "Assist",
+    "Rebound", "Slam Dunk", "Layup", "Jump Shot", "Three-Pointer", "Free Throw",
+    "Header", "Volley", "Bicycle Kick", "Scissors Kick", "Tackle", "Clearance",
+    "Cross", "Corner Kick", "Penalty Kick", "Free Kick", "Serve", "Return",
+    "Smash", "Drop Shot", "Forehand", "Backhand", "Volley", "Dive", "Flip",
+    "Spin", "Vault", "Somersault", "Cartwheel", "Punch", "Jab", "Hook", "Uppercut",
+    "Block", "Takedown", "Pin", "Submission", "Lift", "Snatch", "Clean and Jerk",
+    "Row", "Paddle", "Jump", "Throw", "Push", "Pull", "Kick", "Strike", "Defend",
+    "Attack", "Evade", "Parry", "Thrust", "Aim", "Fire", "Cycle", "Sprint",
+    "Jog", "Hurdle", "Vault", "Land", "Dive", "Glide",
+    
     # 三、赛事相关术语
     "Olympics", "Paralympics", "Asian Games", "World Cup", "European Championship",
     "Asian Cup", "Champions League", "Premier League", "La Liga", "Bundesliga",
