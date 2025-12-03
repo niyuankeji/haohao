@@ -112,7 +112,9 @@ async def main2():
         "youtube_task_favortrain", "filmont_url_77"
     )
     task_list = []
-    async for mongo_info in keyword_with_page_total_77_coll.find({}):
+    async for mongo_info in keyword_with_page_total_77_coll.find(
+        {"crawler_status": None}
+    ):
         for i in range(1, 84):
             task_list.append(
                 {
@@ -127,4 +129,4 @@ async def main2():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main2())
