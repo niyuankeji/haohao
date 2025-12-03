@@ -95,16 +95,14 @@ async def main2():
     )
     task_list = []
     async for mongo_info in keyword_with_page_total_77_coll.find({}):
-        task_list.extend(
-            [
+        for i in range(1, 84):
+            task_list.append(
                 {
                     "keyword": mongo_info["keyword"],
                     "page_index": i,
                     "crawler_status": None,
                 }
-                for i in range(1, 84)
-            ]
-        )
+            )
     for batched_tuple in itertools.batched(sports_terms, 10000):
         await filmont_url_77_coll.insert_many(list(batched_tuple), ordered=False)
         print("完成一批")
