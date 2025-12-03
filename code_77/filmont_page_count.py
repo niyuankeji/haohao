@@ -243,8 +243,10 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                 headers = {
                     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                     "accept-language": "zh-CN,zh;q=0.9",
-                    "referer": f"https://filmot.com/search/{mongo_info['keyword']}/1/1?gridView=1&",
-                    "user-agent": conn.user_agent,
+                    "cache-control": "no-cache",
+                    "pragma": "no-cache",
+                    "priority": "u=0, i",
+                    "user-agent": conn.user_agent
                 }
                 async with curl_requests.AsyncSession() as session:
                     response = await session.get(
@@ -283,7 +285,7 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                         logger.error(f"失败,原因是{e}")
                         return mongo_info, 0
             except Exception as e:
-                logger.error(f"fetch_html出现错误: {e.__class__.__name__} {url}")
+                logger.error(f"fetch_html出现错误: {e.__class__.__name__} {e}")
                 conn.close()
             finally:
                 retry_count -= 1
