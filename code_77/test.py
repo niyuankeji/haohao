@@ -86,5 +86,29 @@ async def main():
         )
 
 
+async def main2():
+    keyword_with_page_total_77_coll = await get_async_ny_mongo_link(
+        "youtube_task_favortrain", "keyword_with_page_total_77"
+    )
+    filmont_url_77_coll = await get_async_ny_mongo_link(
+        "youtube_task_favortrain", "filmont_url_77"
+    )
+    task_list = []
+    for mongo_info in keyword_with_page_total_77_coll.find({}):
+        task_list.extend(
+            [
+                {
+                    "keyword": mongo_info["keyword"],
+                    "page_index": i,
+                    "crawler_status": None,
+                }
+                for i in range(1, 84)
+            ]
+        )
+    for batched_tuple in itertools.batched(sports_terms, 10000):
+        filmont_url_77_coll.insert_many(list(batched_tuple), ordered=False)
+        print("完成一批")
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main2())
