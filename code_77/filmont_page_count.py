@@ -7,6 +7,7 @@ import asyncio
 import string
 import secrets
 import json
+import urllib.parse
 from dataclasses import dataclass, field
 import aiohttp
 import motor.motor_asyncio
@@ -22,6 +23,10 @@ sys.path.append(
 from pools import ConnectionStrategy, ConnectionPool
 
 cloudflare_sem = asyncio.Semaphore(20)
+
+
+def url_encode_single_string(input_str: str) -> str:
+    return urllib.parse.quote(input_str, safe="-_.~", encoding="utf-8", errors="strict")
 
 
 @dataclass
@@ -228,7 +233,8 @@ def convert_number(s):
 
 async def get_page_num(mongo_info, page_index=1, lang="en"):
     retry_count = 3
-    url = f"https://filmot.com/search/{mongo_info['keyword']}/1/{page_index}?gridView=1&"  # 这里page_index（1-83）
+    url = f"https://filmot.com/search/{url_encode_single_string(mongo_info['keyword'])}/1/{page_index}?gridView=1&"  # 这里page_index（1-83）
+    logger.warning(f"当前要请求的url: {url}")
     while retry_count:
         conn: CloudflareConn
         async with stub.get_connection() as conn:
