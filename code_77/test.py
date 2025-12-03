@@ -3,16 +3,77 @@ import asyncio
 import motor.motor_asyncio
 
 sports_terms = [
-    "Score", "Shoot", "Pass", "Dribble", "Tackle", "Block", "Steal", "Assist",
-    "Rebound", "Slam Dunk", "Layup", "Jump Shot", "Three-Pointer", "Free Throw",
-    "Header", "Volley", "Bicycle Kick", "Scissors Kick", "Tackle", "Clearance",
-    "Cross", "Corner Kick", "Penalty Kick", "Free Kick", "Serve", "Return",
-    "Smash", "Drop Shot", "Forehand", "Backhand", "Volley", "Dive", "Flip",
-    "Spin", "Vault", "Somersault", "Cartwheel", "Punch", "Jab", "Hook", "Uppercut",
-    "Block", "Takedown", "Pin", "Submission", "Lift", "Snatch", "Clean and Jerk",
-    "Row", "Paddle", "Jump", "Throw", "Push", "Pull", "Kick", "Strike", "Defend",
-    "Attack", "Evade", "Parry", "Thrust", "Aim", "Fire", "Cycle", "Sprint",
-    "Jog", "Hurdle", "Vault", "Land", "Dive", "Glide",
+    "Score",
+    "Shoot",
+    "Pass",
+    "Dribble",
+    "Tackle",
+    "Block",
+    "Steal",
+    "Assist",
+    "Rebound",
+    "Slam Dunk",
+    "Layup",
+    "Jump Shot",
+    "Three-Pointer",
+    "Free Throw",
+    "Header",
+    "Volley",
+    "Bicycle Kick",
+    "Scissors Kick",
+    "Tackle",
+    "Clearance",
+    "Cross",
+    "Corner Kick",
+    "Penalty Kick",
+    "Free Kick",
+    "Serve",
+    "Return",
+    "Smash",
+    "Drop Shot",
+    "Forehand",
+    "Backhand",
+    "Volley",
+    "Dive",
+    "Flip",
+    "Spin",
+    "Vault",
+    "Somersault",
+    "Cartwheel",
+    "Punch",
+    "Jab",
+    "Hook",
+    "Uppercut",
+    "Block",
+    "Takedown",
+    "Pin",
+    "Submission",
+    "Lift",
+    "Snatch",
+    "Clean and Jerk",
+    "Row",
+    "Paddle",
+    "Jump",
+    "Throw",
+    "Push",
+    "Pull",
+    "Kick",
+    "Strike",
+    "Defend",
+    "Attack",
+    "Evade",
+    "Parry",
+    "Thrust",
+    "Aim",
+    "Fire",
+    "Cycle",
+    "Sprint",
+    "Jog",
+    "Hurdle",
+    "Vault",
+    "Land",
+    "Dive",
+    "Glide",
 ]
 
 
@@ -33,11 +94,14 @@ async def main():
     keyword_with_page_total_77_coll = await get_async_ny_mongo_link(
         "youtube_task_favortrain", "keyword_with_page_total_77"
     )
-    keyword_with_page_total_77_coll.create_index("keyword", unique=True)
+    await keyword_with_page_total_77_coll.create_index("keyword", unique=True)
     for batched_tuple in itertools.batched(sports_terms, 10000):
-        keyword_with_page_total_77_coll.insert_many(
-            [{"keyword": keyword} for keyword in batched_tuple]
-        )
+        try:
+            await keyword_with_page_total_77_coll.insert_many(
+                [{"keyword": keyword} for keyword in batched_tuple]
+            )
+        except Exception as e:
+            print(e.__class__.__name__)
 
 
 async def main2():
