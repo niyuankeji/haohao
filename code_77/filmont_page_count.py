@@ -233,11 +233,12 @@ def convert_number(s):
 
 async def get_page_num(mongo_info, page_index=1, lang="en"):
     retry_count = 3
-    url = f"https://filmot.com/search/{url_encode_single_string(mongo_info['keyword'])}/1/{page_index}?gridView=1&"  # 这里page_index（1-83）
-    logger.warning(f"当前要请求的url: {url}")
+    url = f"https://filmot.com/search/{url_encode_single_string(mongo_info['keyword'])}/1/{page_index}"  # 这里page_index（1-83）
+    params = {"gridView": "1", "": ""}
     while retry_count:
         conn: CloudflareConn
         async with stub.get_connection() as conn:
+            logger.info(conn)
             try:
                 headers = {
                     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -248,6 +249,7 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                 async with curl_requests.AsyncSession() as session:
                     response = await session.get(
                         url=url,
+                        params=params,
                         headers=headers,
                         cookies=conn.cookies,
                         impersonate="chrome",
