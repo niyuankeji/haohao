@@ -282,7 +282,9 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                             )
                         return mongo_info, page_num
                     except Exception as e:
-                        logger.error(f"失败,原因是{e}")
+                        logger.error(f"失败,原因是{e} {params}")
+                        import traceback
+                        traceback.print_exc()
                         return mongo_info, 0
             except Exception as e:
                 logger.error(f"fetch_html出现错误: {e.__class__.__name__} {e}")
