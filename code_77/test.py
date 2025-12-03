@@ -94,7 +94,7 @@ async def main2():
         "youtube_task_favortrain", "filmont_url_77"
     )
     task_list = []
-    for mongo_info in keyword_with_page_total_77_coll.find({}):
+    async for mongo_info in keyword_with_page_total_77_coll.find({}):
         task_list.extend(
             [
                 {
@@ -106,7 +106,7 @@ async def main2():
             ]
         )
     for batched_tuple in itertools.batched(sports_terms, 10000):
-        filmont_url_77_coll.insert_many(list(batched_tuple), ordered=False)
+        await filmont_url_77_coll.insert_many(list(batched_tuple), ordered=False)
         print("完成一批")
 
 
