@@ -100,7 +100,7 @@ async def get_cloudflare_cookie_from_ezcaptcha(
             "websiteURL": target_url,
             "type": "CloudFlare5STask",
             "proxy": proxy,
-            "rqData": {"cookie": {"m_session": m_session}},
+            "rqData": {},
         },
     }
     async with aiohttp.ClientSession() as session:
@@ -175,7 +175,7 @@ async def create_conn_from_hcaptcha():
                     headers["user-agent"] = user_agent
                     response = await session.get(
                         url=url,
-                        headers=cloudflare_cookie_info["solution"]["header"],
+                        headers=headers,
                         cookies=cookies,
                         proxies={"http": proxy, "https": proxy},
                         impersonate="chrome",
@@ -349,10 +349,12 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                         import traceback, uuid
 
                         traceback.print_exc()
+                        file_name = f"{uuid.uuid4()}.html"
                         with open(
-                            f"{uuid.uuid4()}.html", mode="w", encoding="utf-8"
+                            file_name, mode="w", encoding="utf-8"
                         ) as f:
                             f.write(response.text)
+                        logger.info(f"写入: {file_name}")
                         return mongo_info, 0
             except Exception as e:
                 logger.error(f"fetch_html出现错误: {e.__class__.__name__} {e}")
