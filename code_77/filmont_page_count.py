@@ -7,6 +7,7 @@ import asyncio
 import string
 import secrets
 import json
+import re
 from dataclasses import dataclass, field
 import aiohttp
 import motor.motor_asyncio
@@ -34,9 +35,7 @@ class CloudflareConn:
     use_datetime: datetime.datetime
     is_close: bool = field(default=False)
 
-    def close(self, is_print: bool = True, close_reason: str = ""):
-        if is_print:
-            logger.warning(close_reason)
+    def close(self):
         self.is_close = True
 
 
@@ -110,6 +109,57 @@ async def get_cloudflare_cookie_from_cunzhang(
             return resp_json
 
 
+async def get_cloudflare_cookie_from_ezcaptcha(
+    target_url: str,
+    proxy: str,
+    key="0c77fa69aaab42a0a298b3accbff9f7a193959",
+):
+    """从ez_captcha平台中获取cookie"""
+    headers = {"Content-Type": "application/json"}
+    task_data = {
+        "clientKey": key,
+        "task": {
+            "websiteURL": target_url,
+            "type": "CloudFlare5STask",
+            "proxy": proxy,
+            "rqData": {
+                "cookie": {
+                    "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D",
+                }
+            },
+        },
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            url="https://api.ez-captcha.com/createTask",
+            json=task_data,
+            headers=headers,
+            allow_redirects=False,
+            timeout=aiohttp.ClientTimeout(
+                total=10 * 60, connect=15, sock_connect=15, sock_read=15
+            ),
+        ) as task_response:
+            task_response.raise_for_status()
+            task_resp_json = json.loads(await task_response.text())
+            task_id = task_resp_json["taskId"]
+            for _ in range(15):
+                result_data = {"clientKey": key, "taskId": task_id}
+                async with session.post(
+                    url="https://api.ez-captcha.com/getTaskResult",
+                    json=result_data,
+                    headers=headers,
+                    allow_redirects=False,
+                    timeout=aiohttp.ClientTimeout(
+                        total=10 * 60, connect=15, sock_connect=15, sock_read=15
+                    ),
+                ) as result_response:
+                    result_resp_text = await result_response.text()
+                    if "header" in result_resp_text:
+                        result_resp_json = json.loads(result_resp_text)
+                        return result_resp_json
+                await asyncio.sleep(3)
+
+
 async def create_conn():
     conn_id = str(uuid.uuid4())[:8]
     url = "https://filmot.com/search/aaa/1/2?lang=en&gridView=1"
@@ -124,7 +174,6 @@ async def create_conn():
                 "user-agent": user_agent,
             }
             proxy = f"http://welib_77-zone-adam507066-session-{generate_secure_random_string(6, 16)}-sesstime-5:welib_77@2ax1q1v2c6n7-as.ipidea.online:2333"
-            
             async with curl_requests.AsyncSession() as session:
                 response = await session.get(
                     url=url,
@@ -140,7 +189,6 @@ async def create_conn():
                         proxy=proxy,
                         user_agent=user_agent,
                     )
-                    print(f"cf_resp_json: {cf_resp_json}")
                     if cf_resp_json["success"]:
                         cookies = session.cookies.get_dict() or {}
                         cookies["cf_clearance"] = cf_resp_json["cf"]
@@ -170,10 +218,180 @@ async def create_conn():
             retry_count += 1
 
 
-class ResearchgateConnectionStrategy(ConnectionStrategy[CloudflareConn]):
+async def create_conn_from_ez():
+    conn_id = str(uuid.uuid4())[:8]
+    url = "https://filmot.com/search/aaa/1/2?gridView=1&lang=en"
+    retry_count = 0
+    while True:
+        try:
+            user_agent = get_user_agent()
+            headers = {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "referer": "https://filmot.com/search/aaa/1/9?gridView=1&lang=en",
+                "user-agent": user_agent,
+            }
+            proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-15:rEpTA530j0i6@43.153.55.54:9999"
+            cookies = {
+                "m_session": "eyJpdiI6InozUlIvZDFSOUNydHozZ1M1aldkM0E9PSIsInZhbHVlIjoiNUd5NFl5TDF5UlNJR2poRDJ2Tmp4WmZjeEQ0Q2NnczhRbzgvdXpGRlZXbGNFQXNuVWdaZFBuY29yMW5sbXJSbTZRUnc3RExxcHROWGc3ZWRaT3liTGVkaW81L0xpK3E3MkdzcG5raHRyMWoxWDBucitjWE5FaDB6VVpwc2RjSXgiLCJtYWMiOiI0MTkyMWFhMDI5N2QwMWI4NDhhOWVkMTY5MGZmYWFiNzBhNjVkMDBjYTBmNGI0Y2Q2MmZkOWIzOTRiOThhZjVmIiwidGFnIjoiIn0%3D",
+            }
+            async with curl_requests.AsyncSession() as session:
+                response = await session.get(
+                    url=url,
+                    headers=headers,
+                    cookies=cookies,
+                    proxies={"http": proxy, "https": proxy},
+                    impersonate="chrome",
+                    allow_redirects=False,
+                )
+                if response.status_code == 403:
+                    cf_resp_json = await get_cloudflare_cookie_from_ezcaptcha(
+                        target_url=url,
+                        proxy=proxy,
+                    )
+                    if cf_resp_json and cf_resp_json["errorId"] == 0:
+                        cookies.update(session.cookies.get_dict() or {})
+                        cookies.update(cf_resp_json["solution"]["cookies"])
+                        user_agent = cf_resp_json["solution"]["header"]["user-agent"]
+                        logger.info(
+                            f"[conn_id={conn_id} retry_count={retry_count}] pass cloudflare success"
+                        )
+                        return CloudflareConn(
+                            conn_id=conn_id,
+                            success_count=0,
+                            proxy=proxy,
+                            cookies=cookies,
+                            user_agent=user_agent,
+                            use_datetime=datetime.datetime.now(),
+                        )
+                    else:
+                        logger.warning(
+                            f"[conn_id={conn_id} retry_count={retry_count}] 过5s盾失败"
+                        )
+                elif response.status_code == 200:
+                    return CloudflareConn(
+                        conn_id=conn_id,
+                        success_count=0,
+                        proxy=proxy,
+                        cookies=cookies,
+                        user_agent=user_agent,
+                        use_datetime=datetime.datetime.now(),
+                    )
+                else:
+                    logger.warning(
+                        f"[conn_id={conn_id} retry_count={retry_count}] 请求出来的结果不是403"
+                    )
+        except Exception as e:
+            logger.error(f"create_conn_from_ez error: {e.__class__.__name__}")
+        finally:
+            retry_count += 1
+
+
+sem = asyncio.Semaphore(1)
+
+
+async def get_hcaptcha_cookie():
+    retry_count = 1
+    conn_id = str(uuid.uuid4())[:8]
+    while True:
+        try:
+            user_agent = get_user_agent()
+            proxy = f"http://td-customer-SOluI6kkrdk2-sessid-{generate_secure_random_string()}-sesstime-10:rEpTA530j0i6@43.153.55.54:9999"
+            async with curl_requests.AsyncSession() as session:
+                response = await session.get(
+                    url="https://filmot.com/search/aaa/1/2",
+                    params={"gridView": "1", "lang": "en"},
+                    headers={
+                        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                        "accept-language": "zh-CN,zh;q=0.9",
+                        "cache-control": "no-cache",
+                        "pragma": "no-cache",
+                        "user-agent": user_agent,
+                    },
+                    proxies={"http": proxy, "https": proxy},
+                )
+                _token = re.findall(
+                    r'<input type="hidden" name="_token" value="(.*?)">',
+                    response.text,
+                )[0]
+                data = {
+                    "sitekey": "58b0f6cd-815d-4d93-aad6-d80c7d56a8aa",
+                    "referer": "https://filmot.com/captcha-verify",
+                    "rqdata": "",
+                    "user_agent": user_agent,
+                }
+                data = json.dumps(data, separators=(",", ":"))
+                response = await session.post(
+                    url="http://api.nocaptcha.io/api/wanda/hcaptcha/universal",
+                    data=data,
+                    headers={
+                        "Accept": "*/*",
+                        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                        "Content-Type": "application/json",
+                        "User-Agent": user_agent,
+                        "User-Token": "f77c1828-d256-49f8-adfd-e634c82a71c8",
+                    },
+                )
+                resp_json = json.loads(response.text)
+                if resp_json["msg"] != "验证成功":
+                    continue
+                headers = {
+                    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+                    "cache-control": "no-cache",
+                    "content-type": "application/x-www-form-urlencoded",
+                    "origin": "https://filmot.com",
+                    "referer": "https://filmot.com/captcha-verify",
+                    "user-agent": user_agent,
+                }
+                response = await session.post(
+                    url="https://filmot.com/captcha-validate",
+                    data={
+                        "_token": _token,
+                        "g-recaptcha-response": resp_json["data"][
+                            "generated_pass_UUID"
+                        ],
+                        "h-captcha-response": resp_json["data"]["generated_pass_UUID"],
+                    },
+                    headers=headers,
+                    proxies={"http": proxy, "https": proxy},
+                )
+                if response.status_code != 200:
+                    continue
+                return session.cookies.get_dict(), proxy, conn_id, user_agent
+        except Exception as e:
+            logger.error(
+                f"[get_hcaptcha_cookie {conn_id}] error: {e.__class__.__name__}"
+            )
+        finally:
+            logger.info(f"[get_hcaptcha_cookie {conn_id}] 尝试第{retry_count}结束")
+            retry_count += 1
+
+
+async def create_conn_from_hcaptcha():
+    # async with sem:
+    #     hcaptcha_cookie_coll = await hcaptcha_db.get_db()
+    #     mongo_info = await hcaptcha_cookie_coll.find_one({"cookie": {"$ne": None}})
+    #     if not mongo_info:
+    #         cookie_info = await get_hcaptcha_cookie()
+    #         await hcaptcha_cookie_coll.insert_one({"cookie": cookie_info})
+    #     else:
+    #         cookie_info = mongo_info["cookie"]
+    cookies, proxy, conn_id, user_agent = await get_hcaptcha_cookie()
+    return CloudflareConn(
+        conn_id=conn_id,
+        success_count=0,
+        proxy=proxy,
+        cookies=cookies,
+        user_agent=user_agent,
+        use_datetime=datetime.datetime.now(),
+    )
+
+
+class FilmontConnectionStrategy(ConnectionStrategy[CloudflareConn]):
     async def make_connection(self) -> CloudflareConn:
         async with cloudflare_sem:
-            return await create_conn()
+            return await create_conn_from_hcaptcha()
 
     def connection_is_closed(self, conn: CloudflareConn) -> bool:
         return conn.is_close
@@ -197,9 +415,7 @@ async def get_async_ny_mongo_link(db_name: str, coll_name: str):
 
 ###########################################################################################
 
-stub: ConnectionPool = ConnectionPool(
-    strategy=ResearchgateConnectionStrategy(), max_size=100
-)
+stub: ConnectionPool = ConnectionPool(strategy=FilmontConnectionStrategy(), max_size=50)
 
 
 def convert_number(s):
@@ -248,10 +464,16 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                             return mongo_info, 0
                         elif "M" in sticky or "K" in sticky or "B" in sticky:
                             page_num = (
-                                int(convert_number(sticky.split("clips")[0]) / 60) + 1
+                                int(
+                                    convert_number(sticky.split("clips", maxsplit=1)[0])
+                                    / 60
+                                )
+                                + 1
                             )
                         else:
-                            page_num = int(int(sticky.split("clips")[0]) / 60) + 1
+                            page_num = (
+                                int(int(sticky.split("clips", maxsplit=1)[0]) / 60) + 1
+                            )
                         return mongo_info, page_num
                     except Exception as e:
                         logger.error(f"失败,原因是{e}")
