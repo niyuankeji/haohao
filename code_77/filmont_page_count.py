@@ -279,7 +279,7 @@ async def get_async_ny_mongo_link(db_name: str, coll_name: str):
 
 ###########################################################################################
 
-stub: ConnectionPool = ConnectionPool(strategy=FilmontConnectionStrategy(), max_size=1)
+stub: ConnectionPool = ConnectionPool(strategy=FilmontConnectionStrategy(), max_size=20)
 
 
 def convert_number(s):
@@ -301,7 +301,6 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
     while retry_count:
         conn: CloudflareConn
         async with stub.get_connection() as conn:
-            logger.info(conn)
             try:
                 headers = {
                     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -346,21 +345,21 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                         return mongo_info, page_num
                     except Exception as e:
                         logger.error(f"失败,原因是{e} {url}")
-                        import traceback, uuid
+                        # import traceback, uuid
 
-                        traceback.print_exc()
-                        file_name = f"{uuid.uuid4()}.html"
-                        with open(
-                            file_name, mode="w", encoding="utf-8"
-                        ) as f:
-                            f.write(response.text)
-                        logger.info(f"写入: {file_name}")
+                        # traceback.print_exc()
+                        # file_name = f"{uuid.uuid4()}.html"
+                        # with open(
+                        #     file_name, mode="w", encoding="utf-8"
+                        # ) as f:
+                        #     f.write(response.text)
+                        # logger.info(f"写入: {file_name}")
                         return mongo_info, 0
             except Exception as e:
                 logger.error(f"fetch_html出现错误: {e.__class__.__name__} {e}")
-                import traceback
+                # import traceback
 
-                traceback.print_exc()
+                # traceback.print_exc()
                 conn.close()
             finally:
                 retry_count -= 1
