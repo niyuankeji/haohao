@@ -286,6 +286,8 @@ async def get_page_num(mongo_info, page_index=1, lang="en"):
                         return mongo_info, 0
             except Exception as e:
                 logger.error(f"fetch_html出现错误: {e.__class__.__name__} {e}")
+                import traceback
+                traceback.print_exc()
                 conn.close()
             finally:
                 retry_count -= 1
