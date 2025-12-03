@@ -178,6 +178,7 @@ async def create_conn_from_hcaptcha():
                         proxies={"http": proxy, "https": proxy},
                         impersonate="chrome",
                     )
+                    logger.debug(f"进入验证hcaptcha的阶段 {response.text}")
                     _token = re.findall(
                         r'<input type="hidden" name="_token" value="(.*?)">',
                         response.text,
