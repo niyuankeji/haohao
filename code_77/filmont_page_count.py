@@ -175,6 +175,7 @@ async def create_conn_from_hcaptcha():
                     response = await session.get(
                         url=url,
                         headers=headers,
+                        cookies=cookies,
                         proxies={"http": proxy, "https": proxy},
                         impersonate="chrome",
                     )
@@ -221,7 +222,9 @@ async def create_conn_from_hcaptcha():
                             "g-recaptcha-response": resp_json["data"][
                                 "generated_pass_UUID"
                             ],
-                            "h-captcha-response": resp_json["data"]["generated_pass_UUID"],
+                            "h-captcha-response": resp_json["data"][
+                                "generated_pass_UUID"
+                            ],
                         },
                         headers=headers,
                         proxies={"http": proxy, "https": proxy},
