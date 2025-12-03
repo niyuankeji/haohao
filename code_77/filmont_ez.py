@@ -469,7 +469,7 @@ def convert_number(s):
 
 async def get_youtube_key_list(mongo_info, lang="en"):
     retry_count = 3
-    url = f"https://filmot.com/search/{mongo_info['keyword']}/1/{mongo_info['page_index']}?gridView=1&lang={lang}"  # 这里page_index（1-83）
+    url = f"https://filmot.com/search/{mongo_info['keyword']}/1/{mongo_info['page_index']}?gridView=1"  # 这里page_index（1-83）
     while retry_count:
         conn: CloudflareConn
         async with stub.get_connection() as conn:
@@ -477,7 +477,7 @@ async def get_youtube_key_list(mongo_info, lang="en"):
                 headers = {
                     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
                     "accept-language": "zh-CN,zh;q=0.9",
-                    "referer": f"https://filmot.com/search/{mongo_info['keyword']}/1/1?gridView=1&lang={lang}",
+                    "referer": f"https://filmot.com/search/{mongo_info['keyword']}/1/1?gridView=1",
                     "user-agent": conn.user_agent,
                 }
                 start_time = time.time()
